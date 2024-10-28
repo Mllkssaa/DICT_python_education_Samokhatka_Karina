@@ -5,6 +5,9 @@ print("The lion looks healthy.")
 
 
 Camel = r"""
+The Camel habitat...
+
+
 ___.-''''-.
 /___  @    |
 ',,,,.     |         _.'''''''._
@@ -26,6 +29,9 @@ Look at that!"""
 
 
 Lion = r"""
+The Lion habitat...
+
+
 
                                                ,w.
                                              ,YWMMw  ,M  ,
@@ -45,6 +51,9 @@ The lion is roaring!"""
 
 
 Deer = r"""
+The Deer habitat...
+
+
    /|       |\
 `__\\       //__'
    ||      ||
@@ -73,6 +82,8 @@ Well well well!"""
 
 
 Goose = r"""
+The Goose habitat...
+
 
                                     _
                                 ,-"" "".
@@ -89,6 +100,9 @@ Pretty good!"""
 
 
 Bat = r"""
+The Bat habitat...
+
+
 _________________               _________________
  ~-.              \  |\___/|  /              .-~
      ~-.           \ / o o \ /           .-~
@@ -104,6 +118,9 @@ It's doing fine."""
 
 
 Rabbit = r"""
+The Rabbit habitat...
+
+
          ,
         /|      __
        / |   ,-~ /
@@ -125,4 +142,23 @@ Rabbit = r"""
 (" ~----( ~   Y.  )
 It looks fine!"""
 
+
 animals = [Camel, Lion, Deer, Goose, Bat, Rabbit]
+while True:
+    habitat = input("Please enter the number of the habitat you would like to view (or 'exit' to quit): ")
+
+    if habitat.lower() == "exit":
+        print(" You're reached the end of the program. ")
+        break
+
+    try:
+        habitat_number = int(habitat)
+        if 0 <= habitat_number < len(animals):
+            print(animals[habitat_number])
+        else:
+            print("Please enter a valid habitat number")
+    except ValueError:
+        print("Invalid input. Please enter a number or 'exit' to quit.")
+
+
+
