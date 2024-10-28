@@ -145,10 +145,10 @@ It looks fine!"""
 
 animals = [Camel, Lion, Deer, Goose, Bat, Rabbit]
 while True:
-    habitat = input("Please enter the number of the habitat you would like to view (or 'exit' to quit): ")
+    habitat = input("Please enter the number of the habitat you would like to view (or 'exit' to quit): >")
 
     if habitat.lower() == "exit":
-        print(" You're reached the end of the program. ")
+        print("You've reached the end of the program. See you later!")
         break
 
     try:
@@ -156,9 +156,9 @@ while True:
         if 0 <= habitat_number < len(animals):
             print(animals[habitat_number])
         else:
-            print("Please enter a valid habitat number")
+            print("Please enter a valid habitat number.")
     except ValueError:
-        print("Invalid input. Please enter a number or 'exit' to quit.")
+        print("Invalid input. Please enter a number or 'exit' to quit. >")
 
 
 
