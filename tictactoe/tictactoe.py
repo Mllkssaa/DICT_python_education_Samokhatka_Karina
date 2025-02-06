@@ -73,8 +73,6 @@ def switchPlayer():
 
 
 
-
-
 while gameRunning:
     printBoard(board)
     playerInput(board)
