@@ -12,37 +12,23 @@ def load_rating():
         pass
     return ratings
 
-def get_result(user_choice, computer_choice):
-    rules = {
-        "rock": "scissors",
-        "scissors": "paper",
-        "paper": "rock",
-        "rock": "fire",
-        "fire": "scissors",
-        "scissors": "snake",
-        "snake": "human",
-        "human": "tree",
-        "tree": "wolf",
-        "wolf": "sponge",
-        "sponge": "paper",
-        "paper": "air",
-        "air": "water",
-        "water": "dragon",
-        "dragon": "devil",
-        "devil": "lightning",
-        "lightning": "gun",
-        "gun": "rock"
-    }
-
+def get_result(user_choice, computer_choice, options):
     if user_choice == computer_choice:
         return "draw"
-    elif computer_choice in rules[user_choice]:
+
+    user_index = options.index(user_choice)
+    rotated = options[user_index+1:] + options[:user_index]
+    half = len(rotated) // 2
+    loses_to_user = rotated[:half]
+
+    if computer_choice in loses_to_user:
         return "win"
     else:
         return "lose"
 
+
 def main():
-    options = ("rock", "paper", "scissors", "fire", "snake", "human", "tree", "wolf", "sponge", "air", "water", "dragon", "devil", "lightning", "gun")
+    options = ("rock", "fire", "scissors", "snake", "human", "tree", "wolf", "sponge", "paper", "air", "water", "dragon", "devil", "lightning" "gun")
     rating = load_rating()
 
     name = input("Enter your name \n>")
@@ -63,7 +49,7 @@ def main():
             print(f"Computer: {computer}")
 
 
-            result = get_result(player, computer)
+            result = get_result(player, computer, options)
             if result == "draw":
                 print(f"There is a draw ({computer})")
                 score += 50
