@@ -1,81 +1,77 @@
 import math
+import argparse
+import sys
 
-def get_float(prompt):
-    while True:
-        try:
-            return float(input(prompt))
-        except ValueError:
-            print("Enter a valid number")
+parser = argparse.ArgumentParser(description="Credit Calculator")
+parser.add_argument("--type", choices=["annuity", "diff"], help="Type of payment: annuity or diff")
+parser.add_argument("--payment", type=float)
+parser.add_argument("--principal", type=float)
+parser.add_argument("--periods", type=float)
+parser.add_argument("--interest", type=float)
+args = parser.parse_args()
 
-def get_init(prompt):
-    while True:
-        try:
-            return int(input(prompt))
-        except ValueError:
-            print("Enter a valid integer")
+if args.interest is None:
+    print("Incorrect parameters")
+    sys.exit()
 
-print("What do you want to calculate?")
-print('type "n" - for number of monthly payments,')
-print('type "a" - for annuity monthly payment,')
-print('type "p" - for loan principal,')
-print('type "d" for differentiated payments \n')
+def all_positive(*values):
+    return all (v is None or v >= 0 for v in values)
 
-choice = input("> ").lower()
+if not all_positive(args.payment, args.principal, args.periods, args.interest):
+    print("Incorrect parameters")
+    sys.exit()
 
-if choice == "n":
-    principal = get_float("Enter the loan principal:\n ")
-    payment = get_float("Enter the monthly payment:\n ")
-    interest = get_float("Enter the loan interest (%):\n ")
+i = args.interest / (12 * 100)
 
-    i = interest / (12 * 100)
+if args.type == "diff":
+    if args.payment is not None or args.principal is None or args.periods is None:
+        print('Incorrect parameters')
+        sys.exit()
 
-    denominator = payment - i * principal
-    if denominator <= 0:
-        print("The payment is too low to cover the interest. Loan can't be repaid")
-    else:
-        n = math.ceil(math.log(payment / denominator, 1 + i))
-
-    years = n // 12
-    months = n % 12
-
-    result = "It will take"
-
-    if years == 0:
-       result += f"{years} year{'s' if years > 1 else ''}"
-    elif months == 0:
-        if years > 0:
-            result += " and "
-        result += f"{months} month{'s' if months > 1 else ''}"
-    result += " to repay this loan!"
-    print(result)
-
-elif choice == "a":
-    principal = get_float("Enter yhe loan principal: \n> ")
-    periods = get_init("Enter the number of periods:\n> ")
-    interest = get_float("Enter the loan interest (%):\n> ")
-
-    i = interest / (12 * 100)
-    annuity = principal * i * (1 + i) ** periods / ((1 + i) ** periods - 1)
-    annuity = math.ceil(annuity)
-
-    print(f"Your annuity payment = {annuity}!")
-
-elif choice == "p":
-    annuity = get_float("Enter the annuity payment:\n> ")
-    periods = get_init("Enter the number of periods:\n> ")
-    interest = get_float("Enter the loan interest (%):\n> ")
-
-    print(f"Your loan principal = {principal}")
-
-elif choice == "d":
-    principal = get_float("Enter the loan principal:\n> ")
-    periods = get_init("Enter the number of periods:\n> ")
-    interest = get_float("Enter the loan interest (%):\n> ")
-
-    i = interest / (12 * 100)
     total_payment = 0
-
-    for m in range(1, periods + 1):
-        d = math.ceil(principal / periods + i * (principal - (principal * (m - 1)) / periods))
+    for m in range(1, args.periods + 1):
+        d = math.ceil(args.principal / args.periods + i * (args.principal - (args.principal * (m - 1)) / args.periods))
         total_payment += d
         print(f"Month {m}: payment is {d}")
+    overpayment = int(total_payment - args.principal)
+    print(f"Overpayment = {overpayment}")
+
+elif args.type == "annuity":
+    if args.principal and args.payment and args.interest:
+        denominator = args.payment - 1 * args.principal
+        if denominator <= 0:
+            print("Incorrect parameters")
+            sys.exit()
+        n = math.ceil(math.log(args.payment / denominator, 1 + i))
+        years = n // 12
+        months = n % 12
+        msg = "It will take "
+        if years > 0:
+            msg += f"{years} year{'s' if years > 1 else ''}"
+        if years > 0 and months > 0:
+            msg += " and "
+        if months > 0:
+            msg += f"{months} month{'s' if months > 1 else ''}"
+        msg += " to repay this loan"
+        print(msg)
+        overpayment = int(args.payment * n - args.principal)
+        print(f"Overpayment = {overpayment}")
+
+    elif args.principal and args. periods and args.interest:
+      annuity = args.principal * i * (1 + i) ** args.periods / ((1 + i) ** args.periods - 1)
+      annuity = math.ceil(annuity)
+      print(f"Your annuity payment = {annuity}")
+      overpayment = int(annuity * args.periods - args.principal)
+      print(f"Overpayment = {overpayment}")
+
+    elif args.payment and args.periods and args.interest:
+        principal = args.payment / (i * (1 + i) ** args.periods / ((1 + i) ** args.periods - 1))
+        principal = math.floor(principal)
+        print(f"Your loan principal = {principal}")
+        overpayment = int(args.payment * args.periods - principal)
+        print(f"Overpayment = {overpayment}")
+    else:
+        print(f"Incorrect parameters")
+else:
+    print("Incorrect parameters")
+
