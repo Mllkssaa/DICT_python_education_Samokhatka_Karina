@@ -27,7 +27,7 @@ def stage2():
         return
 
     try:
-        response = requests.get(url, headers={'Accept-Language': 'en-US, en;q=0.5'})
+        response = requests.get(url, headers={'Accept-Language': 'en-US,en;q=0.5'})
         soup = BeautifulSoup(response.text, 'html.parser')
 
         title_tags = soup.find('title')
@@ -35,12 +35,49 @@ def stage2():
 
         if title_tags and meta_desc:
             title = title_tags.text.split('-')[0].strip()
-            description = meta_desc.get('content').strip()
+            description = meta_desc.get('content', '').strip()
             print({"title": title, "description": description})
         else:
             print("Invalid movie page.")
-    except Exception:
+    except Exception as e:
+        print("Error:", str(e))
         print("Invalid movie page.")
+
+
+def stage3():
+    url = input("Input the URL.\n>")
+    try:
+        response = requests.get(url)
+        if response.status_code == 200:
+            with open("source.html", "wb") as f:
+                f.write(response.content)
+            print("Content saved.")
+        else:
+            print(f"The URL returned {response.status_code}.")
+    except Exception as e:
+        print("Error:", e)
+
+def sanitize_filename():
+    table = str.maketrans('', '', string.punctuation)
+    title_clean = title.translate(table).replace('', '_')
+    return title_clean.strip()
+
+def stage4():
+    url = input("Input the URL.\n>")
+    response = requests.get(url)
+    soup = BeautifulSoup(response.content, 'html.parser')
+
+    articles = soup.find_all('article')
+    saved_files = []
+
+    for article in articles:
+        article_type = article.find('span', {'data-test': 'article.type'})
+        if article_type and article_type.text.strip() == 'News':
+            tag_link = article.find('a', {'data-track-action': 'view article'})
+            if tag_link:
+                article_url = ""
+
 
 stage1()
 stage2()
+stage3()
