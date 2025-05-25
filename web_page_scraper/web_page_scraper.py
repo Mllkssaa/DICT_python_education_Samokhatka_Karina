@@ -75,9 +75,28 @@ def stage4():
         if article_type and article_type.text.strip() == 'News':
             tag_link = article.find('a', {'data-track-action': 'view article'})
             if tag_link:
-                article_url = ""
+                article_url = "https://www.nature.com/" + tag_link.get('href')
+                article_resp = requests.get(article_url)
+                article_soup = BeautifulSoup(article_resp.content, 'html.parser')
+
+                title_tag = article_soup.find('title')
+                body_tag = article_soup.find('div', class_='c-article-body')
+
+                if not body_tag:
+                    body_tag = article_soup.find('div', class_='article-item_body')
+
+                if title_tag and body_tag:
+                    title = sanitize_filename(title_tag.text)
+                    text = body_tag.get_text(strip=True)
+                    file_name = f"{title}.txt"
+                    with open(file_name, "w", encoding="utf-8") as f:
+                        f.write(text)
+                    saved_files.append(file_name)
+
+        print("Saved articles:", saved_files)
 
 
 stage1()
 stage2()
 stage3()
+stage4()
